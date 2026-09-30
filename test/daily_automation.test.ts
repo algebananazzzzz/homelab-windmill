@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { endOfNextWeekFriday } from "../f/kaneo/pull_due_into_this_week.ts";
+import { weekCutoff } from "../f/kaneo/daily_automation.ts";
 
 const SGT = "Asia/Singapore";
-const cutoff = (iso: string, tz = SGT) => endOfNextWeekFriday(new Date(iso), tz).toISOString();
+const cutoff = (iso: string, tz = SGT) => weekCutoff(new Date(iso), tz).toISOString();
 
 test("midweek run reaches Friday of the following week", () => {
   // Thu 1 Oct 00:00 SGT -> Sat 10 Oct 00:00 SGT
