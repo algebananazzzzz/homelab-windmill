@@ -1,6 +1,6 @@
-summary: Pull due To Do tasks into This Week
+summary: Move To Do tasks due by next Friday into This Week
 description: ''
-lock: '!inline f/kaneo/pull_due_into_this_week.script.lock'
+lock: '!inline f/kaneo/plan_week.script.lock'
 kind: script
 schema:
   $schema: https://json-schema.org/draft/2020-12/schema
