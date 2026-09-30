@@ -13,8 +13,7 @@ env:
   WMILL_WORKSPACE: homelab
 
 jobs:
-  plan:
-    if: github.event_name == 'pull_request'
+  check:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.1
@@ -22,14 +21,38 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      # windmill-cli in package.json must match the server version in homelab-komodo, stacks/apps/windmill/compose.yml.
+      - run: npm ci
+      - run: npm test
+      - run: npx wmill lint
+      # The CLI serialises files in the server's format, so a version skew can push something the server misreads.
+      - name: windmill-cli matches the server
+        run: |
+          server=$(curl -fsS "$WMILL_URL/api/version")
+          cli=$(npm pkg get devDependencies.windmill-cli | tr -d '"')
+          if [ "${server##* v}" != "$cli" ]; then
+            echo "::error::Windmill server is $server but windmill-cli is $cli. Bump package.json with the image in homelab-komodo, stacks/apps/windmill/compose.yml."
+            exit 1
+          fi
+
+  plan:
+    needs: check
+    # Fork PRs get no secrets, and the token must never run code a stranger wrote.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: npm
       - run: npm ci
       - name: Show what merging would change
         env:
           WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
-        run: npx wmill sync push --dry-run --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
+        run: npx wmill sync push --dry-run --locks-required --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
 
   deploy:
+    needs: check
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     # A push deletes whatever the repo lacks, so two deploys must not overlap.
@@ -46,4 +69,4 @@ jobs:
       - name: Push the repo to Windmill
         env:
           WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
-        run: npx wmill sync push --yes --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
+        run: npx wmill sync push --yes --locks-required --message "${{ github.sha }}" --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
