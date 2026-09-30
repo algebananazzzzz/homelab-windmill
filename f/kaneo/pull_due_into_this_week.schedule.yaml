@@ -1,0 +1,9 @@
+schedule: 0 0 0 * * *
+timezone: Asia/Singapore
+script_path: f/kaneo/pull_due_into_this_week
+is_flow: false
+args:
+  kaneo: $res:f/kaneo/kaneo
+  workspace_id: G05XTLroCnxXEIKY1HufyWf18Eglzra3
+  timezone: Asia/Singapore
+enabled: true

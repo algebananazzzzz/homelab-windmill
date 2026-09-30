@@ -1,0 +1,40 @@
+summary: Pull due To Do tasks into This Week
+description: ''
+lock: '!inline f/kaneo/pull_due_into_this_week.script.lock'
+kind: script
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    dry_run:
+      type: boolean
+      description: ''
+      default: false
+    kaneo:
+      type: object
+      description: ''
+      default: null
+      format: resource-kaneo
+      properties:
+        base_url:
+          type: string
+          description: ''
+          originalType: string
+        token:
+          type: string
+          description: ''
+          originalType: string
+    timezone:
+      type: string
+      description: ''
+      default: null
+      originalType: string
+    workspace_id:
+      type: string
+      description: ''
+      default: null
+      originalType: string
+  required:
+    - kaneo
+    - workspace_id
+    - timezone
