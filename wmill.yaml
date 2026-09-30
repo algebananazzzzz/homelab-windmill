@@ -1,0 +1,18 @@
+defaultTs: bun
+
+includes:
+  - "f/**"
+
+# Resource values can hold credentials in plain text, so resources are created in Windmill and never synced.
+# Resource types still sync, so a script can declare the shape of the resource it needs.
+skipResources: true
+
+# Secret variables are created in Windmill and never synced.
+skipSecrets: true
+
+includeSchedules: true
+includeTriggers: true
+
+# Windmill's default for new projects.
+nonDottedPaths: true
+syncBehavior: v1

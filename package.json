@@ -1,0 +1,7 @@
+{
+  "name": "homelab-windmill",
+  "private": true,
+  "devDependencies": {
+    "windmill-cli": "1.820.0"
+  }
+}
