@@ -1,1 +1,3 @@
 node_modules/
+# The CLI caches script hashes here to spot stale metadata; deploys never read it.
+wmill-lock.yaml

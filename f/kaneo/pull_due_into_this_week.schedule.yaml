@@ -3,7 +3,8 @@ timezone: Asia/Singapore
 script_path: f/kaneo/pull_due_into_this_week
 is_flow: false
 args:
-  kaneo: $res:f/kaneo/kaneo
-  workspace_id: G05XTLroCnxXEIKY1HufyWf18Eglzra3
-  timezone: Asia/Singapore
+  api_key: $var:f/kaneo/api_key
 enabled: true
+cron_version: v2
+no_flow_overlap: false
+ws_error_handler_muted: false
