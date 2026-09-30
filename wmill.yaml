@@ -3,11 +3,10 @@ defaultTs: bun
 includes:
   - "f/**"
 
-# Resource values can hold credentials in plain text, so resources are created in Windmill and never synced.
-# Resource types still sync, so a script can declare the shape of the resource it needs.
-skipResources: true
+# Resources sync, but a credential in one must be a $var: reference to a secret variable. CI checks this.
+skipResources: false
 
-# Secret variables are created in Windmill and never synced.
+# Secret variables are created in the Windmill UI, which encrypts them with the workspace key, and never sync.
 skipSecrets: true
 
 includeSchedules: true
