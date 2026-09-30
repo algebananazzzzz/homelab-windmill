@@ -1,5 +1,0 @@
-description: Kaneo API for the homelab workspace. The key lives in the secret variable, which CI writes from the KANEO_API_KEY secret.
-resource_type: kaneo
-value:
-  base_url: https://kaneo.algebananazzzzz.com/api
-  token: $var:f/kaneo/api_key

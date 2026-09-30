@@ -1,8 +1,3 @@
-type Kaneo = {
-  base_url: string;
-  token: string;
-};
-
 type BoardTask = {
   id: string;
   number: number | null;
@@ -15,6 +10,9 @@ type Board = {
   pagination: { totalPages: number };
 };
 
+const KANEO_API = "https://kaneo.algebananazzzzz.com/api";
+const KANEO_WORKSPACE = "G05XTLroCnxXEIKY1HufyWf18Eglzra3";
+const TIMEZONE = "Asia/Singapore";
 const TODO = "to-do";
 const THIS_WEEK = "this-week";
 
@@ -22,13 +20,11 @@ const THIS_WEEK = "this-week";
  * Moves every To Do task due on or before Friday of next week into This Week, across all projects in the
  * workspace, so the weekly column always holds what is due soon without triaging it by hand.
  */
-export async function main(kaneo: Kaneo, workspace_id: string, timezone: string, dry_run = false) {
-  const cutoff = endOfNextWeekFriday(new Date(), timezone);
-  const request = kaneoClient(kaneo);
+export async function main(api_key: string, dry_run = false) {
+  const cutoff = endOfNextWeekFriday(new Date(), TIMEZONE);
+  const request = kaneoClient(api_key);
 
-  const projects = await request<{ id: string; name: string; slug: string }[]>(
-    `/project?workspaceId=${encodeURIComponent(workspace_id)}`,
-  );
+  const projects = await request<{ id: string; name: string; slug: string }[]>(`/project?workspaceId=${KANEO_WORKSPACE}`);
 
   const moved: { task: string; title: string; due: string }[] = [];
   const skipped: string[] = [];
@@ -89,11 +85,11 @@ function zonedMidnight(y: number, monthIndex: number, d: number, timezone: strin
 
 type Request = <T>(path: string, init?: { method: string; body: unknown }) => Promise<T>;
 
-function kaneoClient(kaneo: Kaneo): Request {
+function kaneoClient(apiKey: string): Request {
   return async (path, init) => {
-    const res = await fetch(`${kaneo.base_url}${path}`, {
+    const res = await fetch(`${KANEO_API}${path}`, {
       method: init?.method ?? "GET",
-      headers: { authorization: `Bearer ${kaneo.token}`, "content-type": "application/json" },
+      headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
       body: init ? JSON.stringify(init.body) : undefined,
     });
     if (!res.ok) {

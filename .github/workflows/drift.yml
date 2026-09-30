@@ -1,0 +1,31 @@
+name: drift
+
+# A UI edit in Windmill is silently overwritten by the next deploy, so catch it the night it happens.
+on:
+  schedule:
+    - cron: "0 18 * * *" # 02:00 Asia/Singapore, clear of the 00:00 Kaneo run
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Windmill matches main
+        env:
+          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
+        run: |
+          result=$(npx wmill sync pull --dry-run --json-output --workspace homelab --base-url https://windmill.algebananazzzzz.com --token "$WMILL_TOKEN")
+          if [ "$(echo "$result" | jq .total)" != "0" ]; then
+            echo "::error::Windmill differs from main. Copy the UI change into the repo, or redeploy main to discard it."
+            echo "$result" | jq -r '.changes[] | "\(.type) \(.path)"'
+            exit 1
+          fi
