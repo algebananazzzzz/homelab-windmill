@@ -1,6 +1,6 @@
 schedule: 0 0 0 * * *
 timezone: Asia/Singapore
-script_path: f/kaneo/plan_week
+script_path: f/kaneo/daily_automation
 is_flow: false
 args:
   api_key: $var:f/kaneo/api_key

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { weekCutoff } from "../f/kaneo/plan_week.ts";
+import { weekCutoff } from "../f/kaneo/daily_automation.ts";
 
 const SGT = "Asia/Singapore";
 const cutoff = (iso: string, tz = SGT) => weekCutoff(new Date(iso), tz).toISOString();
