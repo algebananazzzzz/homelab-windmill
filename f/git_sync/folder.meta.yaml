@@ -1,6 +1,6 @@
-summary: null
+summary: Where Windmill git sync pushes from
 display_name: git_sync
-owners:
-  - u/danielzhouqx
 extra_perms:
   u/danielzhouqx: true
+owners:
+  - u/danielzhouqx
