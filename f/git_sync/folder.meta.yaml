@@ -1,4 +1,4 @@
-summary: Where Windmill git sync pushes from
+summary: Windmill git sync pushes this workspace to homelab-windmill.
 display_name: git_sync
 extra_perms:
   u/danielzhouqx: true
