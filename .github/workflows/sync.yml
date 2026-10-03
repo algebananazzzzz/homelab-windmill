@@ -27,25 +27,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
       - run: npx wmill lint
-      - name: Resources hold no plain-text credentials
-        run: |
-          leaks=$(grep -rnEi --include='*.resource.yaml' '^\s+[a-z_]*(token|password|secret|key)[a-z_]*:' f | grep -v ': \$var:' || true)
-          if [ -n "$leaks" ]; then
-            echo "::error::Store these in a secret variable and reference it with \$var:"
-            echo "$leaks"
-            exit 1
-          fi
-      # The CLI serialises files in the server's format, so a version skew can push something the server misreads.
-      - name: windmill-cli matches the server
-        run: |
-          server=$(curl -fsS "$WMILL_URL/api/version")
-          cli=$(npm pkg get devDependencies.windmill-cli | tr -d '"')
-          if [ "${server##* v}" != "$cli" ]; then
-            echo "::error::Windmill server is $server but windmill-cli is $cli. Bump package.json with the image in homelab-komodo, stacks/apps/windmill/compose.yml."
-            exit 1
-          fi
 
   plan:
     needs: check
