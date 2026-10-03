@@ -61,7 +61,8 @@ jobs:
 
   deploy:
     needs: check
-    if: github.event_name == 'push'
+    # Windmill git sync commits with a [WM] prefix after the change is already live.
+    if: github.event_name == 'push' && !startsWith(github.event.head_commit.message, '[WM]')
     runs-on: ubuntu-24.04
     # A push deletes whatever the repo lacks, so two deploys must not overlap.
     concurrency:

@@ -1,0 +1,6 @@
+description: This repository; Windmill git sync commits workspace changes to it.
+resource_type: git_repository
+# The variable holds the whole authenticated URL and is written by the homelab-komodo bootstrap.
+value:
+  url: $var:f/git_sync/repo_url
+  branch: main
