@@ -23,7 +23,7 @@ jobs:
         env:
           WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
         run: |
-          result=$(npx wmill sync pull --dry-run --json-output --workspace homelab --base-url https://windmill.algebananazzzzz.com --token "$WMILL_TOKEN")
+          result=$(npx wmill sync pull --dry-run --json-output --include-settings --workspace homelab --base-url https://windmill.algebananazzzzz.com --token "$WMILL_TOKEN")
           if [ "$(echo "$result" | jq .total)" != "0" ]; then
             echo "::error::Windmill differs from main, so git sync has failed. Check the git sync job in Windmill before the next deploy deletes the unsynced change."
             echo "$result" | jq -r '.changes[] | "\(.type) \(.path)"'
