@@ -1,13 +1,13 @@
-name: sync
+name: 2-deploy-content
 
-# Content only. The workspace itself, its settings and git sync's files belong to workspace.yml.
+# Content only. The workspace itself, its settings and git sync's files belong to 1-deploy-workspace.
 on:
   pull_request:
-    paths-ignore: &config [settings.yaml, "f/git_sync/**", .github/workflows/workspace.yml]
+    paths-ignore: &config [settings.yaml, "f/git_sync/**", .github/workflows/1-deploy-workspace.yml]
   push:
     branches: [main]
     paths-ignore: *config
-  # After a rebuild, run workspace.yml first.
+  # After a rebuild, run 1-deploy-workspace first.
   workflow_dispatch:
 
 permissions:

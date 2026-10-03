@@ -1,13 +1,13 @@
-name: workspace
+name: 1-deploy-workspace
 
-# The workspace itself, its settings (including git sync's config) and git sync's repository. Content is sync.yml's job.
+# The workspace itself, its settings (including git sync's config) and git sync's repository. Content is 2-deploy-content's job.
 on:
   pull_request:
-    paths: &config [settings.yaml, "f/git_sync/**", .github/workflows/workspace.yml]
+    paths: &config [settings.yaml, "f/git_sync/**", .github/workflows/1-deploy-workspace.yml]
   push:
     branches: [main]
     paths: *config
-  # After a rebuild, run this before sync.yml.
+  # After a rebuild, run this before 2-deploy-content.
   workflow_dispatch:
 
 permissions:
