@@ -12,6 +12,9 @@ skipSecrets: true
 includeSchedules: true
 includeTriggers: true
 
+# settings.yaml holds the workspace settings, including the git sync config.
+includeSettings: true
+
 # Windmill's default for new projects.
 nonDottedPaths: true
 syncBehavior: v1

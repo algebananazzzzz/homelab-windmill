@@ -75,6 +75,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # A no-op unless the workspace is gone, as after a rebuild; the token's owner becomes its admin.
+      - name: Create the workspace if missing
+        env:
+          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
+        run: npx wmill workspace add "$WMILL_WORKSPACE" "$WMILL_WORKSPACE" "$WMILL_URL" --create --create-workspace-name Homelab --token "$WMILL_TOKEN"
       - name: Push the repo to Windmill
         env:
           WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
