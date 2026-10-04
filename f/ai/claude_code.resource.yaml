@@ -1,0 +1,4 @@
+description: Claude Code on the Claude subscription.
+resource_type: claude_code
+value:
+  oauth_token: $var:f/ai/claude_code_oauth_token

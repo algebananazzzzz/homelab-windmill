@@ -1,0 +1,5 @@
+description: NUS Canvas.
+resource_type: canvas
+value:
+  base_url: https://canvas.nus.edu.sg
+  token: $var:f/canvas/token

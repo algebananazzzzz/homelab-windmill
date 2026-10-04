@@ -1,0 +1,10 @@
+description: A Claude subscription token for running Claude Code headless.
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    oauth_token:
+      type: string
+      description: The token `claude setup-token` prints, passed to Claude Code as CLAUDE_CODE_OAUTH_TOKEN.
+  required:
+    - oauth_token

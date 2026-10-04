@@ -1,0 +1,6 @@
+summary: Model credentials for the workspace AI settings and agent scripts.
+display_name: ai
+owners:
+  - u/danielzhouqx
+extra_perms:
+  u/danielzhouqx: true

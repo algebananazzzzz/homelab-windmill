@@ -1,0 +1,6 @@
+summary: Canvas LMS access shared by the course scripts.
+display_name: canvas
+owners:
+  - u/danielzhouqx
+extra_perms:
+  u/danielzhouqx: true

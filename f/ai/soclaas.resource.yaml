@@ -1,0 +1,5 @@
+description: NUS SoC LaaS, an OpenAI-compatible gateway to open models.
+resource_type: customai
+value:
+  base_url: https://soclaas-api.comp.nus.edu.sg/v1
+  api_key: $var:f/ai/soclaas_api_key

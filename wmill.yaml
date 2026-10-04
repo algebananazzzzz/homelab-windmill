@@ -2,7 +2,7 @@ defaultTs: bun
 
 includes:
   - "f/**"
-  - kaneo.resource-type.yaml
+  - "*.resource-type.yaml"
 
 # Resources sync, but a credential in one must be a $var: reference to a secret variable.
 skipResources: false

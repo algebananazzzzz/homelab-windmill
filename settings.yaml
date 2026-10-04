@@ -1,4 +1,21 @@
 name: Homelab
+ai_config:
+  default_model:
+    model: qwen3.8:27b
+    provider: customai
+  providers:
+    customai:
+      models:
+        - qwen3.8:27b
+        - qwen3.6:35b
+        - qwen3.6:27b
+        - qwen3.5:9b
+        - qwen3-coder-next
+        - qwen3-vl:32b
+        - gemma4:26b
+        - ornith1.5:35b
+        - llama3.1:8b
+      resource_path: f/ai/soclaas
 error_handler: null
 git_sync:
   repositories:

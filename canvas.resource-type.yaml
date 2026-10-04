@@ -1,0 +1,14 @@
+description: A Canvas LMS instance and an access token for it.
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    base_url:
+      type: string
+      description: Canvas root, such as https://canvas.nus.edu.sg.
+    token:
+      type: string
+      description: Canvas access token.
+  required:
+    - base_url
+    - token
