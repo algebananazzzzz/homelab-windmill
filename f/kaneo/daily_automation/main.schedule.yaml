@@ -3,7 +3,7 @@ timezone: Asia/Singapore
 script_path: f/kaneo/daily_automation/main
 is_flow: false
 args:
-  api_key: $var:f/kaneo/api_key
+  kaneo: $res:f/kaneo/kaneo
 enabled: true
 cron_version: v2
 no_flow_overlap: false

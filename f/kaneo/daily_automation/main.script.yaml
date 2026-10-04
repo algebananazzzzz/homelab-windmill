@@ -6,14 +6,27 @@ schema:
   $schema: https://json-schema.org/draft/2020-12/schema
   type: object
   properties:
-    api_key:
-      type: string
-      description: ''
-      default: null
-      originalType: string
     dry_run:
       type: boolean
       description: ''
       default: false
+    kaneo:
+      type: object
+      description: ''
+      default: null
+      format: resource-kaneo
+      properties:
+        api_key:
+          type: string
+          description: ''
+          originalType: string
+        base_url:
+          type: string
+          description: ''
+          originalType: string
+        workspace_id:
+          type: string
+          description: ''
+          originalType: string
   required:
-    - api_key
+    - kaneo

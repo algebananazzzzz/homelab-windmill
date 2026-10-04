@@ -10,26 +10,27 @@ type Board = {
   pagination: { totalPages: number };
 };
 
-const API = "https://kaneo.algebananazzzzz.com/api";
-const WORKSPACE = "G05XTLroCnxXEIKY1HufyWf18Eglzra3";
 const TIMEZONE = "Asia/Singapore";
 const TODO = "to-do";
 const THIS_WEEK = "this-week";
+
+// Named after the `kaneo` resource type, so Windmill offers f/kaneo/kaneo for this parameter.
+type Kaneo = { base_url: string; workspace_id: string; api_key: string };
 
 /**
  * Moves every To Do task due on or before Friday of next week into This Week, across all projects in the
  * workspace, so the weekly column always holds what is due soon without triaging it by hand.
  */
-export async function main(api_key: string, dry_run = false) {
+export async function main(kaneo: Kaneo, dry_run = false) {
   const cutoff = weekCutoff(new Date(), TIMEZONE);
-  const kaneo = client(api_key);
+  const api = client(kaneo);
 
-  const projects = await kaneo<{ id: string; name: string; slug: string }[]>(`/project?workspaceId=${WORKSPACE}`);
+  const projects = await api<{ id: string; name: string; slug: string }[]>(`/project?workspaceId=${kaneo.workspace_id}`);
 
   const moved: { task: string; title: string; due: string }[] = [];
   const skipped: string[] = [];
   for (const project of projects) {
-    const { hasThisWeek, tasks } = await todoTasks(kaneo, project.id);
+    const { hasThisWeek, tasks } = await todoTasks(api, project.id);
     // Only boards that opted into the weekly column take part.
     if (!hasThisWeek) {
       skipped.push(project.name);
@@ -38,7 +39,7 @@ export async function main(api_key: string, dry_run = false) {
 
     const due = tasks.filter((t) => t.dueDate !== null && new Date(t.dueDate) < cutoff);
     if (due.length > 0 && !dry_run) {
-      const result = await kaneo<{ updatedCount: number }>("/task/bulk", {
+      const result = await api<{ updatedCount: number }>("/task/bulk", {
         method: "PATCH",
         body: { taskIds: due.map((t) => t.id), operation: "updateStatus", value: THIS_WEEK },
       });
@@ -83,13 +84,13 @@ function midnightIn(y: number, monthIndex: number, d: number, timezone: string):
   return new Date(utcMidnight - (wallAsUtc - utcMidnight));
 }
 
-type Kaneo = <T>(path: string, init?: { method: string; body: unknown }) => Promise<T>;
+type KaneoClient = <T>(path: string, init?: { method: string; body: unknown }) => Promise<T>;
 
-function client(apiKey: string): Kaneo {
+function client(kaneo: Kaneo): KaneoClient {
   return async (path, init) => {
-    const res = await fetch(`${API}${path}`, {
+    const res = await fetch(`${kaneo.base_url}${path}`, {
       method: init?.method ?? "GET",
-      headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+      headers: { authorization: `Bearer ${kaneo.api_key}`, "content-type": "application/json" },
       body: init ? JSON.stringify(init.body) : undefined,
     });
     if (!res.ok) {
@@ -99,11 +100,11 @@ function client(apiKey: string): Kaneo {
   };
 }
 
-async function todoTasks(kaneo: Kaneo, projectId: string) {
+async function todoTasks(api: KaneoClient, projectId: string) {
   const tasks: BoardTask[] = [];
   let hasThisWeek = false;
   for (let page = 1, totalPages = 1; page <= totalPages; page++) {
-    const board = await kaneo<Board>(`/task/tasks/${projectId}?status=${TODO}&limit=100&page=${page}`);
+    const board = await api<Board>(`/task/tasks/${projectId}?status=${TODO}&limit=100&page=${page}`);
     totalPages = board.pagination.totalPages;
     hasThisWeek ||= board.data.columns.some((c) => c.slug === THIS_WEEK);
     tasks.push(...(board.data.columns.find((c) => c.slug === TODO)?.tasks ?? []));

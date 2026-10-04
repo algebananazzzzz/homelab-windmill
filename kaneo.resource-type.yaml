@@ -1,0 +1,18 @@
+description: A Kaneo workspace and an API key for it.
+schema:
+  $schema: https://json-schema.org/draft/2020-12/schema
+  type: object
+  properties:
+    base_url:
+      type: string
+      description: Kaneo API root, ending in /api.
+    workspace_id:
+      type: string
+      description: The Kaneo workspace the scripts act on.
+    api_key:
+      type: string
+      description: Kaneo API key.
+  required:
+    - base_url
+    - workspace_id
+    - api_key

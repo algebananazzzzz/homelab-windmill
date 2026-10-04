@@ -1,0 +1,6 @@
+description: The homelab Kaneo workspace.
+resource_type: kaneo
+value:
+  base_url: https://kaneo.algebananazzzzz.com/api
+  workspace_id: G05XTLroCnxXEIKY1HufyWf18Eglzra3
+  api_key: $var:f/kaneo/api_key
