@@ -16,9 +16,6 @@ jobs:
     # Fork PRs get no secrets, and the token must never run code a stranger wrote.
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    defaults:
-      run:
-        shell: bash
     env:
       WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
     steps:
@@ -30,18 +27,6 @@ jobs:
       - run: npm ci
       - run: npx wmill lint
       - name: Plan the workspace config
-        run: |
-          {
-            echo '### Workspace config (2-deploy-workspace)'
-            echo '```'
-            npx wmill sync push --dry-run --include-settings --includes "f/git_sync/**" --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN" 2>&1 | sed 's/\x1b\[[0-9;]*m//g'
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+        run: npx wmill sync push --dry-run --include-settings --includes "f/git_sync/**" --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
       - name: Plan the content
-        run: |
-          {
-            echo '### Content (3-deploy-content)'
-            echo '```'
-            npx wmill sync push --dry-run --locks-required --excludes "f/git_sync/**" --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN" 2>&1 | sed 's/\x1b\[[0-9;]*m//g'
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+        run: npx wmill sync push --dry-run --locks-required --excludes "f/git_sync/**" --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
