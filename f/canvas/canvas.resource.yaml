@@ -1,5 +1,5 @@
-description: NUS Canvas.
-resource_type: canvas
+description: NUS Canvas, read by the course sync.
 value:
   base_url: https://canvas.nus.edu.sg
   token: $var:f/canvas/token
+resource_type: canvas
