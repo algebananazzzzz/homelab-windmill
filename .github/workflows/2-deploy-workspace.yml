@@ -1,13 +1,11 @@
-name: 1-deploy-workspace
+name: 2-deploy-workspace
 
-# The workspace itself, its settings (including git sync's config) and git sync's repository. Content is 2-deploy-content's job.
+# The workspace itself, its settings (including git sync's config) and git sync's repository.
 on:
-  pull_request:
-    paths: &config [settings.yaml, "f/git_sync/**", .github/workflows/1-deploy-workspace.yml]
   push:
     branches: [main]
-    paths: *config
-  # After a rebuild, run this before 2-deploy-content.
+    paths: &config [settings.yaml, "f/git_sync/**", .github/workflows/2-deploy-workspace.yml]
+  # After a rebuild, run this before 3-deploy-content.
   workflow_dispatch:
 
 permissions:
@@ -18,29 +16,15 @@ env:
   WMILL_WORKSPACE: homelab
 
 jobs:
-  plan:
-    # Fork PRs get no secrets, and the token must never run code a stranger wrote.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Show what merging would change
-        env:
-          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
-        run: npx wmill sync push --dry-run --include-settings --includes "f/git_sync/**" --skip-branch-validation --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
-
-  apply:
+  deploy:
     # Windmill git sync commits with a [WM] prefix after the change is already live.
-    if: github.event_name != 'pull_request' && !startsWith(github.event.head_commit.message, '[WM]')
+    if: ${{ !startsWith(github.event.head_commit.message, '[WM]') }}
     runs-on: ubuntu-24.04
     concurrency:
       group: windmill-deploy
       cancel-in-progress: false
+    env:
+      WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.0.0
@@ -50,16 +34,11 @@ jobs:
       - run: npm ci
       # A no-op unless the workspace is gone, as after a rebuild; the token's owner becomes its admin.
       - name: Create the workspace if missing
-        env:
-          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
         run: npx wmill workspace add "$WMILL_WORKSPACE" "$WMILL_WORKSPACE" "$WMILL_URL" --create --create-workspace-name Homelab --token "$WMILL_TOKEN"
       - name: Push the settings and git sync's folder and resource
-        env:
-          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
         run: npx wmill sync push --yes --include-settings --includes "f/git_sync/**" --message "${{ github.sha }}" --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
       # Runs after the push because the push creates the f/git_sync folder in a new workspace.
       - name: Give git sync its repository URL
         env:
-          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
           GIT_SYNC_TOKEN: ${{ secrets.WINDMILL_GIT_SYNC_TOKEN }}
         run: npx wmill variable add "https://x-access-token:$GIT_SYNC_TOKEN@github.com/${{ github.repository }}.git" f/git_sync/repo_url --secret --yes --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"

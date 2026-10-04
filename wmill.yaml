@@ -12,7 +12,7 @@ skipSecrets: true
 includeSchedules: true
 includeTriggers: true
 
-# settings.yaml is pushed only by 1-deploy-workspace.
+# settings.yaml is pushed only by 2-deploy-workspace.
 includeSettings: false
 
 # Windmill's default for new projects.

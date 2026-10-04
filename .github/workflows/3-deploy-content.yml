@@ -1,0 +1,37 @@
+name: 3-deploy-content
+
+# Scripts, flows, schedules and the rest of f/**. 2-deploy-workspace owns the settings and git sync's files.
+on:
+  push:
+    branches: [main]
+    paths-ignore: [settings.yaml, "f/git_sync/**", .github/workflows/2-deploy-workspace.yml]
+  # After a rebuild, run 2-deploy-workspace first.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  WMILL_URL: https://windmill.algebananazzzzz.com
+  WMILL_WORKSPACE: homelab
+
+jobs:
+  deploy:
+    # Windmill git sync commits with a [WM] prefix after the change is already live.
+    if: ${{ !startsWith(github.event.head_commit.message, '[WM]') }}
+    runs-on: ubuntu-24.04
+    # A push deletes whatever the repo lacks, so two deploys must not overlap.
+    concurrency:
+      group: windmill-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Push the repo to Windmill
+        env:
+          WMILL_TOKEN: ${{ secrets.WMILL_TOKEN }}
+        run: npx wmill sync push --yes --locks-required --excludes "f/git_sync/**" --message "${{ github.sha }}" --workspace "$WMILL_WORKSPACE" --base-url "$WMILL_URL" --token "$WMILL_TOKEN"
